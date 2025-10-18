@@ -16,6 +16,7 @@ public class RestaurantKafkaHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(RestaurantKafkaHandler.class);
     private static final String ORDER_CREATED_TOPIC = "order-created";
     private static final String RESTAURANT_EVENT_TOPIC = "restaurant-event";
+    private static final String ORDER_STATUS_TOPIC = "order-status";
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
@@ -40,6 +41,16 @@ public class RestaurantKafkaHandler {
     }
 
     /**
+     * Sends an order-status event to Kafka (e.g. order ready).
+     *
+     * @param message the status message to send
+     */
+    public void sendOrderStatus(final Object message) {
+        LOGGER.info("Sending order status event: {}", message);
+        kafkaTemplate.send(ORDER_STATUS_TOPIC, message);
+    }
+
+    /**
      * Listens for order created events from Kafka.
      *
      * @param message the received message
@@ -48,5 +59,14 @@ public class RestaurantKafkaHandler {
     public void listenOrderCreated(final Object message) {
         LOGGER.info("Received order created event: {}", message);
         // Handle the event (e.g., update restaurant availability)
+
+        // For this demo wiring: immediately publish an order-status update indicating the order is ready.
+        // In a real system this would be triggered when the kitchen finishes preparation.
+        try {
+            final String statusMessage = String.format("%s | status=READY", message == null ? "" : message.toString());
+            sendOrderStatus(statusMessage);
+        } catch (final Exception ex) {
+            LOGGER.warn("Failed to send order-status for message {}: {}", message, ex.getMessage());
+        }
     }
 }

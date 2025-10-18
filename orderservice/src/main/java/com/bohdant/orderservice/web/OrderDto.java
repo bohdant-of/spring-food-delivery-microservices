@@ -2,6 +2,9 @@ package com.bohdant.orderservice.web;
 
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Immutable DTO representing an order.
  */
@@ -12,7 +15,12 @@ public final class OrderDto {
     private final String restaurantId;
     private final String details;
 
-    public OrderDto(final String orderId, final String customerId, final String restaurantId, final String details) {
+    @JsonCreator
+    public OrderDto(
+            @JsonProperty("orderId") final String orderId,
+            @JsonProperty("customerId") final String customerId,
+            @JsonProperty("restaurantId") final String restaurantId,
+            @JsonProperty("details") final String details) {
         this.orderId = orderId;
         this.customerId = customerId;
         this.restaurantId = restaurantId;
@@ -61,4 +69,3 @@ public final class OrderDto {
         return Objects.hash(orderId, customerId, restaurantId, details);
     }
 }
-
