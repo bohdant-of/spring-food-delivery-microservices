@@ -1,6 +1,5 @@
 package com.bohdant.orderservice.kafka;
 
-import com.bohdant.orderservice.web.OrderDto;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,13 +18,12 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
-import org.springframework.kafka.support.serializer.JsonSerializer;
 
 /**
- * Kafka configuration for Order Service.
+ * Kafka configuration for Orders Service.
  *
- * Producer is configured to serialize OrderDto to JSON and uses the full
- * `spring.kafka.properties.sasl.jaas.config` value if provided.
+ * Mirrors the configuration used in other services and supports passing
+ * the full JAAS string via `spring.kafka.properties.sasl.jaas.config`.
  */
 @Configuration
 public class KafkaConfig {
@@ -55,16 +53,16 @@ public class KafkaConfig {
         final Map<String, Object> props = new HashMap<>();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
 
+        if (saslJaasConfig != null && !saslJaasConfig.isBlank()) {
+            props.put("sasl.jaas.config", saslJaasConfig);
+        }
         if (securityProtocol != null && !securityProtocol.isBlank()) {
             props.put("security.protocol", securityProtocol);
         }
         if (saslMechanism != null && !saslMechanism.isBlank()) {
             props.put("sasl.mechanism", saslMechanism);
-        }
-        if (saslJaasConfig != null && !saslJaasConfig.isBlank()) {
-            props.put("sasl.jaas.config", saslJaasConfig);
         }
         if (clientId != null && !clientId.isBlank()) {
             props.put(ProducerConfig.CLIENT_ID_CONFIG, clientId);
@@ -74,12 +72,12 @@ public class KafkaConfig {
     }
 
     @Bean
-    public ProducerFactory<String, OrderDto> producerFactory() {
+    public ProducerFactory<String, Object> producerFactory() {
         return new DefaultKafkaProducerFactory<>(producerConfigs());
     }
 
     @Bean
-    public KafkaTemplate<String, OrderDto> kafkaTemplate() {
+    public KafkaTemplate<String, Object> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
 
@@ -91,14 +89,14 @@ public class KafkaConfig {
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 
+        if (saslJaasConfig != null && !saslJaasConfig.isBlank()) {
+            props.put("sasl.jaas.config", saslJaasConfig);
+        }
         if (securityProtocol != null && !securityProtocol.isBlank()) {
             props.put("security.protocol", securityProtocol);
         }
         if (saslMechanism != null && !saslMechanism.isBlank()) {
             props.put("sasl.mechanism", saslMechanism);
-        }
-        if (saslJaasConfig != null && !saslJaasConfig.isBlank()) {
-            props.put("sasl.jaas.config", saslJaasConfig);
         }
         if (sessionTimeoutMs != null && !sessionTimeoutMs.isBlank()) {
             try {
@@ -123,3 +121,4 @@ public class KafkaConfig {
         return factory;
     }
 }
+

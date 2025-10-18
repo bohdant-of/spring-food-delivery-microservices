@@ -21,8 +21,6 @@ import org.springframework.kafka.core.ProducerFactory;
 
 /**
  * Kafka configuration for Notification Service.
- *
- * Uses the full JAAS string provided via `spring.kafka.properties.sasl.jaas.config`.
  */
 @Configuration
 public class KafkaConfig {
@@ -120,3 +118,4 @@ public class KafkaConfig {
         return factory;
     }
 }
+

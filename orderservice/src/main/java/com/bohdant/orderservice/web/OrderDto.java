@@ -1,66 +1,64 @@
 package com.bohdant.orderservice.web;
 
+import java.util.Objects;
+
 /**
- * Simple DTO representing an order payload for demonstration.
+ * Immutable DTO representing an order.
  */
-public class OrderDto {
+public final class OrderDto {
 
-    private String orderId;
-    private String restaurantId;
-    private String items;
-    private long totalCents;
+    private final String orderId;
+    private final String customerId;
+    private final String restaurantId;
+    private final String details;
 
-    public OrderDto() {
-        // no-args for Jackson
-    }
-
-    public OrderDto(final String orderId, final String restaurantId, final String items, final long totalCents) {
+    public OrderDto(final String orderId, final String customerId, final String restaurantId, final String details) {
         this.orderId = orderId;
+        this.customerId = customerId;
         this.restaurantId = restaurantId;
-        this.items = items;
-        this.totalCents = totalCents;
+        this.details = details;
     }
 
     public String getOrderId() {
         return orderId;
     }
 
-    public void setOrderId(final String orderId) {
-        this.orderId = orderId;
+    public String getCustomerId() {
+        return customerId;
     }
 
     public String getRestaurantId() {
         return restaurantId;
     }
 
-    public void setRestaurantId(final String restaurantId) {
-        this.restaurantId = restaurantId;
-    }
-
-    public String getItems() {
-        return items;
-    }
-
-    public void setItems(final String items) {
-        this.items = items;
-    }
-
-    public long getTotalCents() {
-        return totalCents;
-    }
-
-    public void setTotalCents(final long totalCents) {
-        this.totalCents = totalCents;
+    public String getDetails() {
+        return details;
     }
 
     @Override
     public String toString() {
         return "OrderDto{" +
                 "orderId='" + orderId + '\'' +
+                ", customerId='" + customerId + '\'' +
                 ", restaurantId='" + restaurantId + '\'' +
-                ", items='" + items + '\'' +
-                ", totalCents=" + totalCents +
+                ", details='" + details + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final OrderDto orderDto = (OrderDto) o;
+        return Objects.equals(orderId, orderDto.orderId) &&
+                Objects.equals(customerId, orderDto.customerId) &&
+                Objects.equals(restaurantId, orderDto.restaurantId) &&
+                Objects.equals(details, orderDto.details);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(orderId, customerId, restaurantId, details);
     }
 }
 
